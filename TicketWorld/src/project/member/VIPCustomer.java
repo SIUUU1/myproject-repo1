@@ -1,10 +1,10 @@
 package project.member;
-
 import java.util.ArrayList;
-
 import project.cart.Bill;
 import project.cart.Cart;
-
+//프로젝트명 : Ticket World
+//클레스 역할 : VIP고객과 관련된 정보를 관리하는 기능을 처리하는 클래스
+//제작자 : 안시우, 제작일 : 24년 4월 16일
 public class VIPCustomer extends Customer {
 	// memberVariable
 	private double saleRatio; // 구매할인율

@@ -1,10 +1,8 @@
 package project.member;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
@@ -13,10 +11,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
-
 import project.main.Main;
 import project.performance.Performance;
-
+//프로젝트명 : Ticket World
+//클레스 역할 : 관리자 관련 정보와 고객정보파일, 공연정보파일을 관리하는 클래스
+//제작자 : 안시우, 제작일 : 24년 4월 16일
 public class Admin {
 	// memberVariable
 	public static Scanner sc = new Scanner(System.in);
@@ -50,7 +49,7 @@ public class Admin {
 			printPerformanceItemManagementMenu();
 			String menuSelect = sc.nextLine().replaceAll("[^1-3]", "0");
 			if (menuSelect.length() == 0) {
-				System.out.println("잘못 입력하셨습니다.");
+				System.out.println("다시 입력해주세요.");
 			} else {
 				int menuSelectNum = Integer.parseInt(menuSelect);
 				if (menuSelectNum < 1 || menuSelectNum > 3) {
@@ -257,9 +256,6 @@ public class Admin {
 				// 공연 정보 저장, 로딩
 				Admin.savePerformanceList();
 				Admin.lodePerformanceList();
-				// 고객 정보 저장, 로딩
-				Admin.saveCustomerList();
-				Admin.lodeCustomerList();
 			}
 		}
 	}

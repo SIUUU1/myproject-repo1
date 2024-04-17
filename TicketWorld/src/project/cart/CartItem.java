@@ -1,12 +1,11 @@
 package project.cart;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
-
-import project.member.Admin;
 import project.performance.Performance;
-
+//프로젝트명 : Ticket World
+//클레스 역할 : 고객이 장바구니에 담은 공연 항목과 관련된 정보를 관리하는 기능을 처리하는 클래스
+//제작자 : 안시우, 제작일 : 24년 4월 16일
 public class CartItem implements Serializable {
 	// memberVariable
 	private Performance item;

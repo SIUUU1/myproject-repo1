@@ -1,13 +1,13 @@
 package project.cart;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
-
 import project.main.Main;
 import project.member.Admin;
 import project.performance.Performance;
-
+//프로젝트명 : Ticket World
+//클레스 역할 : 고객의 장바구니와 관련된 정보를 관리하는 기능을 처리하는 클래스
+//제작자 : 안시우, 제작일 : 24년 4월 16일
 public class Cart implements CartInterface, Serializable {
 	// memberVariable
 	public static final int ROW_NUM = 5; // 행
@@ -61,12 +61,10 @@ public class Cart implements CartInterface, Serializable {
 				System.out.print("원하는 좌석" + (i + 1) + "(예:A00)을 입력하세요. ");
 				seatNumber = sc.nextLine().toUpperCase();
 				if (seatNumber.length() < 1 || seatNumber.length() > 4) {
-					System.out.println(" 길이 다시 입력해주세요");
 				} else {
 					x = seatNumber.charAt(0) - 65;
 					y = Integer.parseInt(seatNumber.substring(1).replaceAll("[^0-9]", "0")) - 1;
 					if (x < 0 || x > ROW_NUM || y < 0 || y > COLUMN_NUM) {
-						System.out.println(" 알파다시 입력해주세요");
 					} else {
 						seatNumberFlag = true;
 					}
@@ -153,8 +151,9 @@ public class Cart implements CartInterface, Serializable {
 
 	@Override
 	public void removeCartPerformance(int pnumId, int numId) {
-		Main.performanceInfoList.get(pnumId).setSoldSeats(
-				Main.performanceInfoList.get(pnumId).getSoldSeats() - cartItemList.get(numId).getQuantity());
+		Performance p = Main.performanceInfoList.get(pnumId);
+		p.setSoldSeats(
+				p.getSoldSeats() - cartItemList.get(numId).getQuantity());
 		cartItemList.remove(numId);
 	}
 

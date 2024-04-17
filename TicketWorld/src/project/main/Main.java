@@ -3,7 +3,6 @@ package project.main;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import project.cart.Bill;
 import project.exception.CartException;
@@ -11,21 +10,25 @@ import project.member.Admin;
 import project.member.Customer;
 import project.member.VIPCustomer;
 import project.performance.Performance;
+
+//데이터베이스를 사용하지 않고 파일로 데이터를 관리하였습니다.
 //프로젝트명 : Ticket World
-//제작자 :안시우, 제작일 : 24년4월16일
+//클레스 역할 : 고객, 공연과 관련된 정보를 관리하는 기능을 처리하는 클래스 
+//제작자 : 안시우, 제작일 : 24년 4월 16일
 public class Main {
 	public static final int ROW_NUM = 5; // 행
 	public static final int COLUMN_NUM = 20; // 열
 	public static final int VIP_ACCUMULPAYMENT = 100_000; // VIP등급최소누적금액
 	public static ArrayList<Performance> performanceInfoList = new ArrayList<Performance>();
 	public static ArrayList<Customer> customerInfoList = new ArrayList<Customer>();
-	public static String[] menuLoginPage = new String[] { "LOGIN", "REGISTER", "ADMINLOGIN", "QUIT" }; // 로그인페이지메뉴
+	public static String[] menuLoginPage = new String[] { "LOGIN", "REGISTER", "ADMINLOGIN", "FORGOTIDPW", "QUIT" }; // 로그인페이지메뉴
 	public static String[] menuUserMode = new String[] { "CUSTOMERINFO", "TICKETING", "SHOPPINGCART", "PRINTBILL",
 			"LOGOUT" }; // 유저모드메뉴
 	public static String[] menuAdminMode = new String[] { "MANAGEMEMBER", "MANAGEPERFORMANCE", "QUIT" }; // 관리자모드메뉴
 	public static String[] menuSearchP = new String[] { "SEARCHNAME", "SEARCHGENRE", "RESERVATION", "BACK" }; // 공연검색메뉴
 	public static String[] menuCart = new String[] { "PAYMENT", "CARTREMOVEITEM", "CARTCLEAR", "BACK" }; // 장바구니 메뉴
-	public static String[] menuSearchGenre = new String[] { "뮤지컬", "콘서트", "연극", "클래식", "무용", "기타" }; // 공연 장르 검색
+	public static String[] menuSearchGenre = new String[] { "뮤지컬", "콘서트", "연극", "클래식", "무용", "기타" }; // 공연장르 검색메뉴
+	public static String[] menuForgotIdPw = new String[] { "SEARCHID", "RESETPW", "BACK" }; // 아이디 비밀번호 찾기메뉴
 	public static Scanner sc = new Scanner(System.in);
 	static Customer customer = new Customer(); // 현재 고객
 	static int cusNumId = -1; // 현재 고객의 고객리스트 index
@@ -49,7 +52,7 @@ public class Main {
 		while (!flag) {
 			loginPage();
 			String menuSelect = sc.nextLine().replaceAll("[^1-4]", "0");
-			if (menuSelect.length() == 0) { // menuSelect가 null일때
+			if (menuSelect.length() == 0) { // menuSelect가 null일때 대비
 				System.out.println("다시 입력하세요.");
 			} else {
 				int menuSelectNum = Integer.parseInt(menuSelect);
@@ -75,6 +78,10 @@ public class Main {
 							flag = true;
 						}
 						break;
+					case "FORGOTIDPW":
+						// 아이디 비밀번호 찾기
+						forgotIdPw();
+						break;
 					case "QUIT":
 						System.out.println("종료합니다.");
 						flag = true;
@@ -91,7 +98,7 @@ public class Main {
 				menuIntroduction();
 				String menuSelect = sc.nextLine().replaceAll("[^1-5]", "0");
 				if (menuSelect.length() == 0) {
-					System.out.println("잘못 입력하셨습니다.");
+					System.out.println("다시 입력해주세요.");
 				} else {
 					int menuSelectNum = Integer.parseInt(menuSelect);
 					if (menuSelectNum < 1 || menuSelectNum > 5) {
@@ -130,7 +137,7 @@ public class Main {
 				printAdminModeMenu();
 				String menuSelect = sc.nextLine().replaceAll("[^1-3]", "0");
 				if (menuSelect.length() == 0) {
-					System.out.println("잘못 입력하셨습니다.");
+					System.out.println("다시 입력해주세요.");
 				} else {
 					int menuSelectNum = Integer.parseInt(menuSelect);
 					if (menuSelectNum < 1 || menuSelectNum > 3) {
@@ -161,7 +168,8 @@ public class Main {
 		System.out.println("\t\t" + "   Welcome to Ticket World");
 		System.out.println("****************************************************************");
 		System.out.println(" 1. 회원 로그인        \t2. 회원가입");
-		System.out.println(" 3. 관리자 로그인       \t4. 종료");
+		System.out.println(" 3. 관리자 로그인       \t4. 아이디/비밀번호 찾기");
+		System.out.println(" 5. 종료");
 		System.out.println("****************************************************************");
 
 	}
@@ -200,7 +208,7 @@ public class Main {
 			}
 		}
 		if (loginFlag == false) {
-			System.out.println("존재하지 않는 아이디거나 비밀번호를 잘못 입력하셨습니다.");
+			System.out.println("존재하지 않는 아이디거나 잘못된 비밀번호를 입력하셨습니다.");
 		}
 		return loginFlag;
 	}
@@ -240,8 +248,8 @@ public class Main {
 						System.out.print("나이 : ");
 						String age = sc.nextLine().replaceAll("[^0-9]", "0");
 						int ageNum = Integer.parseInt(age);
-						if (age.length() == 0 || ageNum < 1) {
-							System.out.println("잘못 입력하셨습니다.");
+						if (age.length() == 0 || ageNum < 1 || ageNum > 130) {
+							System.out.println("다시 입력해주세요.");
 						} else {
 							customer.setAge(ageNum);
 							ageFlag = true;
@@ -258,6 +266,75 @@ public class Main {
 				}
 			} // end of while
 		}
+	}
+
+	// 아이디 또는 비밀번호 찾기
+	public static void forgotIdPw() {
+		boolean flag = false;
+		Customer cus = null;
+		while (!flag) {
+			System.out.println("****************************************************************");
+			System.out.println(" 1. 아이디 찾기           \t2. 비밀번호 재설정");
+			System.out.println(" 3. 뒤로가기");
+			System.out.println("****************************************************************");
+			String menuSelect = sc.nextLine().replaceAll("[^1-2]", "0");
+			if (menuSelect.length() == 0) {
+				System.out.println("다시 입력하세요.");
+			} else {
+				int menuSelectNum = Integer.parseInt(menuSelect);
+				if (menuSelectNum < 1 || menuSelectNum > 2) {
+					System.out.println("1부터 3까지의 숫자를 입력해주세요.");
+				} else {
+					switch (menuForgotIdPw[menuSelectNum - 1]) {
+					case "SEARCHID":
+						// 아이디 찾기
+						// 본인 확인
+						cus = identification();
+						if (cus != null) {
+							System.out.println("고객님의 아이디는 " + cus.getId() + "입니다.");
+						}
+						break;
+					case "RESETPW":
+						// 비밀번호 재설정
+						cus = identification();
+						if (cus != null) {
+							System.out.print("재설정할 비밀번호를 입력하세요.");
+							String pw = sc.nextLine();
+							cus.setPw(pw);
+							System.out.println("비밀번호가 성공적으로 재설정되었습니다.");
+						}
+						flag = true;
+						break;
+					case "BACK":
+						// 뒤로가기
+						flag = true;
+						break;
+
+					}
+				}
+			}
+		} // end of while
+	}
+
+	// 본인 확인하기
+	public static Customer identification() {
+		Customer cus = null;
+		boolean flag = false;
+		System.out.print("이름을 입력하세요. ");
+		String name = sc.nextLine();
+		System.out.print("전화번호를 입력하세요. ");
+		String phone = sc.nextLine();
+		for (int i = 0; i < customerInfoList.size(); i++) {
+			if (name.equals(customerInfoList.get(i).getName()) && phone.equals(customerInfoList.get(i).getPhone())) {
+				cus = customerInfoList.get(i);
+				flag = true;
+				break;
+			}
+		}
+		if (flag == false) {
+			System.out.println("존재하지 않는 회원입니다.");
+		}
+		return cus;
 	}
 
 	// 본인 정보 확인하기
@@ -298,13 +375,14 @@ public class Main {
 					System.out.println("해당 공연이 매진되어 예매할 수 없습니다.");
 					exitFlag = true;
 				} else {
-					boolean countFlag = false;
-					while (!countFlag) {
-						System.out.print("예매할 좌석수를 입력하세요.");
-						String countNum = sc.nextLine().replaceAll("[^0-9]", "0");
+					System.out.print("예매할 좌석수를 입력하세요.");
+					String countNum = sc.nextLine().replaceAll("[^0-9]", "0");
+					if (countNum.length() == 0) {
+						System.out.println("다시 입력해주세요");
+					} else {
 						int count = Integer.parseInt(countNum);
-						if (countNum.length() == 0 || count < 1) {
-							System.out.println("잘못 입력하셨습니다.");
+						if (count < 1) {
+							System.out.println("다시 입력해주세요");
 						} else {
 							if (performanceInfoList.get(numId).calcRemainingSeat() >= count) {
 								// 공연 좌석 정하기
@@ -314,12 +392,10 @@ public class Main {
 								customerInfoList.add(cusNumId, customer);
 								Admin.saveCustomerList();
 								Admin.lodeCustomerList();
-								exitFlag = true;
 							} else {
 								System.out.println("예매할 공연의 잔여좌석이 부족합니다.");
-								exitFlag = true;
 							}
-							countFlag = true;
+							exitFlag = true;
 						}
 					}
 				}
@@ -340,7 +416,7 @@ public class Main {
 				try {
 					String menuSelect = sc.nextLine().replaceAll("[^1-4]", "0");
 					if (menuSelect.length() == 0) {
-						System.out.println("잘못 입력하셨습니다.");
+						System.out.println("다시 입력해주세요");
 					} else {
 						int menuSelectNum = Integer.parseInt(menuSelect);
 						if (menuSelectNum < 1 || menuSelectNum > 4) {
@@ -445,7 +521,8 @@ public class Main {
 					}
 				}
 				customer.getCart().getCartItemList().clear();
-				updateGrade();
+				// 고객등급 업데이트
+				updateCustomerGrade();
 				// 고객 정보 저장, 로딩
 				customerInfoList.remove(cusNumId);
 				customerInfoList.add(cusNumId, customer);
@@ -515,14 +592,14 @@ public class Main {
 
 	// 장바구니 비우기
 	public static void menuCartClear() throws CartException {
-		if (customer.getCart().getCartItemList().size() == 0) {
+		int cartCount = customer.getCart().getCartItemList().size();
+		if (cartCount == 0) {
 			throw new CartException("장바구니에 항목이 없습니다.");
 		} else {
 			System.out.print("장바구니의 모든 항목을 삭제하시겠습니까? Y | N ");
 			String str = sc.nextLine();
 			if (str.equalsIgnoreCase("Y")) {
 				int numId = -1, pnumId = -1;
-				int cartCount = customer.getCart().getCartItemList().size();
 				for (int i = 0; i < cartCount; i++) {
 					for (int j = 0; j < performanceInfoList.size(); j++) {
 						if (customer.getCart().getCartItemList().get(i).getPerformanceID()
@@ -548,8 +625,8 @@ public class Main {
 		System.out.println("장바구니의 모든 항목을 삭제했습니다.");
 	}
 
-	// 고객등급 자동 업데이트
-	public static void updateGrade() {
+	// 고객등급 업데이트
+	public static void updateCustomerGrade() {
 		if (customer.getAccumulatedPayment() > VIP_ACCUMULPAYMENT) {
 			VIPCustomer vipCustomer = new VIPCustomer(customer.getName(), customer.getPhone(), customer.getId(),
 					customer.getPw(), customer.getAddress(), customer.getAge(), customer.getCart(),
@@ -577,7 +654,7 @@ public class Main {
 
 			String menuSelect = sc.nextLine().replaceAll("[^1-4]", "0");
 			if (menuSelect.length() == 0) {
-				System.out.println("잘못 입력하셨습니다.");
+				System.out.println("다시 입력해주세요.");
 			} else {
 				int menuSelectNum = Integer.parseInt(menuSelect);
 				if (menuSelectNum < 1 || menuSelectNum > 4) {
@@ -626,7 +703,7 @@ public class Main {
 			String menuSelect = sc.nextLine().replaceAll("[^1-6]", "0");
 
 			if (menuSelect.length() == 0) {
-				System.out.println("잘못 입력하셨습니다.");
+				System.out.println("다시 입력해주세요.");
 			} else {
 				int menuSelectNum = Integer.parseInt(menuSelect);
 				if (menuSelectNum < 1 || menuSelectNum > 6) {

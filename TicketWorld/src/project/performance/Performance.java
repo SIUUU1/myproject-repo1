@@ -1,8 +1,9 @@
 package project.performance;
-
 import java.io.Serializable;
 import java.util.Objects;
-
+//프로젝트명 : Ticket World
+//클레스 역할 : 공연과 관련된 정보를 관리하는 기능을 처리하는 클래스
+//제작자 : 안시우, 제작일 : 24년 4월 16일
 public class Performance implements Comparable<Performance>, Serializable {
 	// memberVariable
 	public static final int ROW_NUM = 5; // 행
