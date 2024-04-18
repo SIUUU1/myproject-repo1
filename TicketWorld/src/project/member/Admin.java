@@ -260,7 +260,7 @@ public class Admin {
 		}
 	}
 
-	// performance 로딩
+	// performances.txt 로딩
 	public static void lodePerformanceList() {
 		Main.performanceInfoList.clear();
 		ObjectInputStream ois = null;
@@ -282,7 +282,7 @@ public class Admin {
 		}
 	}
 
-	// performance 저장
+	// performances.txt 저장
 	public static void savePerformanceList() {
 		ObjectOutputStream oos = null;
 		try {
@@ -301,7 +301,7 @@ public class Admin {
 		}
 	}
 
-	// customer 로딩
+	// customers.txt 로딩
 	public static void lodeCustomerList() {
 		Main.customerInfoList.clear();
 		ObjectInputStream ois = null;
@@ -323,7 +323,7 @@ public class Admin {
 		}
 	}
 
-	// customer 저장
+	// customers.txt 저장
 	public static void saveCustomerList() {
 		ObjectOutputStream oos = null;
 		try {
@@ -342,7 +342,7 @@ public class Admin {
 		}
 	}
 
-	// admin 로딩
+	// admin.txt 로딩
 	public static void lodeAdmin() {
 		BufferedReader br = null;
 		try {
