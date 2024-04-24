@@ -3,15 +3,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 import project.performance.Performance;
+
 //프로젝트명 : Ticket World
 //클레스 역할 : 고객이 장바구니에 담은 공연 항목과 관련된 정보를 관리하는 기능을 처리하는 클래스
 //제작자 : 안시우, 제작일 : 24년 4월 16일
 public class CartItem implements Serializable {
 	// memberVariable
-	private Performance item;
+	private Performance item; // 공연
 	private String performanceID; // 공연ID
 	private int[][] seatArr; // 좌석
-	// private int soldSeats; // 판매된 좌석수
 	private ArrayList<String> seatNum = new ArrayList<String>(); // 좌석 번호
 	private int quantity; // 예매 인원수
 	private int totalPrice; // 총구매금액
@@ -22,7 +22,6 @@ public class CartItem implements Serializable {
 		this.item = item;
 		performanceID = item.getPerformanceID();
 		seatArr = item.getSeatArr();
-		// soldSeats = item.getSoldSeats();
 		this.seatNum = seatNum;
 		this.quantity = quantity;
 		item.setSoldSeats(item.getSoldSeats() + quantity);

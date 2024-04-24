@@ -1,10 +1,12 @@
 package project.cart;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
 import project.main.Main;
 import project.member.Admin;
 import project.performance.Performance;
+
 //프로젝트명 : Ticket World
 //클레스 역할 : 고객의 장바구니와 관련된 정보를 관리하는 기능을 처리하는 클래스
 //제작자 : 안시우, 제작일 : 24년 4월 16일
@@ -13,6 +15,7 @@ public class Cart implements CartInterface, Serializable {
 	public static final int ROW_NUM = 5; // 행
 	public static final int COLUMN_NUM = 20; // 열
 	public static Scanner sc = new Scanner(System.in);
+//	private int cartCount = 0; // 장바구니에 있는 항목 수
 	private ArrayList<CartItem> cartItemList = new ArrayList<CartItem>();
 
 	// memberFunction
@@ -31,14 +34,9 @@ public class Cart implements CartInterface, Serializable {
 		System.out.println(" \t\t\t " + "내 장바구니");
 		System.out.println("================================================================");
 		System.out.println(" 공연ID | 공연명 | 공연일 | 예매좌석 | 총예매수 |  ");
-		System.out.println("----------------------------------------------------------------");
 		for (int i = 0; i < cartItemList.size(); i++) {
-			if (i != cartItemList.size() - 2) {
-				System.out.println("----------------------------------------------------------------");
-				System.out.println(cartItemList.get(i));
-			} else {
-				System.out.println(cartItemList.get(i));
-			}
+			System.out.println("----------------------------------------------------------------");
+			System.out.println(cartItemList.get(i));
 		}
 		System.out.println("================================================================");
 		System.out.println();
@@ -87,7 +85,7 @@ public class Cart implements CartInterface, Serializable {
 			}
 		}
 		// 장바구니 추가하기
-		System.out.println("좌석 " + count + "매 장바구니에 추가하셨습니다.");
+		System.out.println(Main.performanceInfoList.get(numId).getName() + "공연 좌석 " + count + "매 장바구니에 추가하셨습니다.");
 		insertCartPerformance(Main.performanceInfoList.get(numId), count, seatNumList);
 		Admin.savePerformanceList();
 		Admin.lodePerformanceList();
@@ -134,29 +132,35 @@ public class Cart implements CartInterface, Serializable {
 	}
 
 	// Overriding
-	@Override
-	public void printPerformanceList() {
-		System.out.println("================================================================");
-		System.out.println(" 공연ID | 공연명 | 장르 | 공연일 | 장소 | 제한연령 | 잔여좌석/총좌석 | 티켓가격 ");
-		System.out.println("================================================================");
-		Main.performanceInfoList.stream().forEach(System.out::println);
-		System.out.println("================================================================");
-	}
-
+	// CartItem에 공연 정보를 등록하는 함수
 	@Override
 	public void insertCartPerformance(Performance performace, int quantity, ArrayList<String> seatNumList) {
 		CartItem cartItem = new CartItem(performace, quantity, seatNumList);
 		cartItemList.add(cartItem);
 	}
 
+	// 장바구니 순번 numId의 항목을 삭제하는 함수
 	@Override
 	public void removeCartPerformance(int pnumId, int numId) {
 		Performance p = Main.performanceInfoList.get(pnumId);
-		p.setSoldSeats(
-				p.getSoldSeats() - cartItemList.get(numId).getQuantity());
+		p.setSoldSeats(p.getSoldSeats() - cartItemList.get(numId).getQuantity());
 		cartItemList.remove(numId);
 	}
 
+	// 장바구니 비우기 함수
+	@Override
+	public void removeAllCart() {
+		for (CartItem c : cartItemList) {
+			for (Performance p : Main.performanceInfoList) {
+				if (c.getPerformanceID().equals(p.getPerformanceID())) {
+					p.setSoldSeats(p.getSoldSeats() - c.getQuantity());
+				}
+			}
+		}
+		cartItemList.clear();
+	}
+
+	// 결제금액 계산함수
 	@Override
 	public int payment() {
 		int sum = 0;

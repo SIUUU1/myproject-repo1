@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import project.cart.Bill;
+import project.cart.CartInterface;
 import project.exception.CartException;
 import project.member.Admin;
 import project.member.Customer;
@@ -22,7 +23,7 @@ public class Main {
 	public static ArrayList<Performance> performanceInfoList = new ArrayList<Performance>();
 	public static ArrayList<Customer> customerInfoList = new ArrayList<Customer>();
 	public static String[] menuLoginPage = new String[] { "LOGIN", "REGISTER", "ADMINLOGIN", "FORGOTIDPW", "QUIT" }; // 로그인페이지메뉴
-	public static String[] menuUserMode = new String[] { "CUSTOMERINFO", "TICKETING", "SHOPPINGCART", "PRINTBILL",
+	public static String[] menuUserMode = new String[] { "CUSTOMERINFO", "TICKETING", "CART", "BILL", "OPENTALK",
 			"LOGOUT" }; // 유저모드메뉴
 	public static String[] menuAdminMode = new String[] { "MANAGEMEMBER", "MANAGEPERFORMANCE", "QUIT" }; // 관리자모드메뉴
 	public static String[] menuSearchP = new String[] { "SEARCHNAME", "SEARCHGENRE", "RESERVATION", "BACK" }; // 공연검색메뉴
@@ -96,13 +97,13 @@ public class Main {
 			System.out.println(customer.getName() + "님 환영합니다.");
 			while (!mainExitFlag) {
 				menuIntroduction();
-				String menuSelect = sc.nextLine().replaceAll("[^1-5]", "0");
+				String menuSelect = sc.nextLine().replaceAll("[^1-6]", "0");
 				if (menuSelect.length() == 0) {
 					System.out.println("다시 입력해주세요.");
 				} else {
 					int menuSelectNum = Integer.parseInt(menuSelect);
-					if (menuSelectNum < 1 || menuSelectNum > 5) {
-						System.out.println("1부터 5까지의 숫자를 입력해주세요");
+					if (menuSelectNum < 1 || menuSelectNum > 6) {
+						System.out.println("1부터 6까지의 숫자를 입력해주세요");
 					} else {
 						switch (menuUserMode[menuSelectNum - 1]) {
 						case "CUSTOMERINFO":
@@ -113,13 +114,18 @@ public class Main {
 							// 예매하기
 							menuTicketing();
 							break;
-						case "SHOPPINGCART":
+						case "CART":
 							// 장바구니
 							menuShoppingCart();
 							break;
-						case "PRINTBILL":
+						case "BILL":
 							// 결제 내역 출력
 							menuPaymentBill();
+							break;
+						case "OPENTALK":
+							// 공연별 오픈톡
+							System.out.println("오픈톡이 실행됩니다.");
+							menuOpenTalk();
 							break;
 						case "LOGOUT":
 							System.out.println("로그아웃");
@@ -163,6 +169,28 @@ public class Main {
 		}
 	}// end of main
 
+	// 공연별 오픈톡
+	public static void menuOpenTalk() {
+		int pnumId = -1;
+		boolean flag = false;
+		// 전체공연 출력
+		CartInterface.printPerformanceList();
+		while (!flag) {
+			System.out.print("오픈톡방에 참여할 공연ID를 입력하세요. ");
+			String pId = sc.nextLine();
+			for (int i = 0; i < performanceInfoList.size(); i++) {
+				if (pId.equals(performanceInfoList.get(i).getPerformanceID())) {
+					pnumId = i;
+					flag = true;
+					break;
+				}
+			}
+		} // end of while
+		if(flag) {
+			
+		}
+	}
+
 	public static void loginPage() {
 		System.out.println("****************************************************************");
 		System.out.println("\t\t" + "   Welcome to Ticket World");
@@ -180,7 +208,7 @@ public class Main {
 		System.out.println("****************************************************************");
 		System.out.println(" 1. 본인 정보 확인하기     \t2. 예매하기");
 		System.out.println(" 3. 장바구니             \t4. 결제내역보기");
-		System.out.println(" 5. 로그아웃");
+		System.out.println(" 5. 공연별 오픈톡         \t6. 로그아웃");
 		System.out.println("****************************************************************");
 	}
 
@@ -352,7 +380,7 @@ public class Main {
 	public static void menuTicketing() {
 		boolean exitFlag = false;
 		// 전체 공연 정보 목록 출력
-		customer.getCart().printPerformanceList();
+		CartInterface.printPerformanceList();
 		// 공연 검색
 		exitFlag = searchPerformance();
 		// 장바구니 추가하기
@@ -408,9 +436,10 @@ public class Main {
 	// 장바구니
 	public static void menuShoppingCart() {
 		boolean flag = false;
+		int cartCount = customer.getCart().getCartItemList().size();
 		// 장바구니출력
 		customer.getCart().printCart();
-		if (customer.getCart().getCartItemList().size() != 0) {
+		if (cartCount != 0) {
 			while (!flag) {
 				printCartMenu();
 				try {
@@ -475,7 +504,8 @@ public class Main {
 
 	// 결제하기
 	public static void menuOrderCartItem() {
-		if (customer.getCart().getCartItemList().size() == 0) {
+		int cartCount = customer.getCart().getCartItemList().size();
+		if (cartCount == 0) {
 			customer.getCart().printCart();
 		} else {
 			System.out.print("장바구니에 있는 모든 항목을 결제하시겠습니까? Y | N ");
@@ -510,16 +540,6 @@ public class Main {
 					customer.getBillList().add(bill);
 				}
 				// 장바구니 비우기
-				int pnumId = -1;
-				for (int i = 0; i < customer.getCart().getCartItemList().size(); i++) {
-					for (int j = 0; j < performanceInfoList.size(); j++) {
-						if (customer.getCart().getCartItemList().get(i).getPerformanceID()
-								.equals(performanceInfoList.get(j).getPerformanceID())) {
-							pnumId = j;
-							break;
-						}
-					}
-				}
 				customer.getCart().getCartItemList().clear();
 				// 고객등급 업데이트
 				updateCustomerGrade();
@@ -535,7 +555,8 @@ public class Main {
 	// 장바구니 항목 삭제하기
 	public static void menuCartRemoveItem() throws CartException {
 		boolean exitFlag = false;
-		if (customer.getCart().getCartItemList().size() == 0) {
+		int cartCount = customer.getCart().getCartItemList().size();
+		if (cartCount == 0) {
 			throw new CartException("장바구니에 항목이 없습니다.");
 		} else {
 			// 장바구니 출력
@@ -550,7 +571,7 @@ public class Main {
 					continue;
 				}
 				boolean flag = false;
-				for (int i = 0; i < customer.getCart().getCartItemList().size(); i++) {
+				for (int i = 0; i < cartCount; i++) {
 					if (strId.equals(customer.getCart().getCartItemList().get(i).getPerformanceID())) {
 						numId = i;
 						flag = true;
@@ -569,7 +590,6 @@ public class Main {
 							}
 						}
 						customer.getCart().cancelSeats(pnumId, numId);
-
 						System.out.println(
 								customer.getCart().getCartItemList().get(numId).getItem().getName() + "공연이 삭제되었습니다.");
 						customer.getCart().removeCartPerformance(pnumId, numId);
@@ -609,17 +629,19 @@ public class Main {
 							break;
 						}
 					}
+					// 좌석지정 취소
 					customer.getCart().cancelSeats(pnumId, numId);
-					customer.getCart().removeCartPerformance(pnumId, numId);
-					// 공연 정보 저장, 로딩
-					Admin.savePerformanceList();
-					Admin.lodePerformanceList();
-					// 고객 정보 저장, 로딩
-					customerInfoList.remove(cusNumId);
-					customerInfoList.add(cusNumId, customer);
-					Admin.saveCustomerList();
-					Admin.lodeCustomerList();
 				}
+				// 장바구니 비우기
+				customer.getCart().removeAllCart();
+				// 공연 정보 저장, 로딩
+				Admin.savePerformanceList();
+				Admin.lodePerformanceList();
+				// 고객 정보 저장, 로딩
+				customerInfoList.remove(cusNumId);
+				customerInfoList.add(cusNumId, customer);
+				Admin.saveCustomerList();
+				Admin.lodeCustomerList();
 			}
 		}
 		System.out.println("장바구니의 모든 항목을 삭제했습니다.");
@@ -701,7 +723,6 @@ public class Main {
 			System.out.println("****************************************************************");
 			System.out.print("검색할 장르를 고르세요. ");
 			String menuSelect = sc.nextLine().replaceAll("[^1-6]", "0");
-
 			if (menuSelect.length() == 0) {
 				System.out.println("다시 입력해주세요.");
 			} else {

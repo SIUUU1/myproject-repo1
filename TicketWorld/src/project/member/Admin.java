@@ -1,4 +1,5 @@
 package project.member;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,6 +14,7 @@ import java.util.Date;
 import java.util.Scanner;
 import project.main.Main;
 import project.performance.Performance;
+
 //프로젝트명 : Ticket World
 //클레스 역할 : 관리자 관련 정보와 고객정보파일, 공연정보파일을 관리하는 클래스
 //제작자 : 안시우, 제작일 : 24년 4월 16일
@@ -200,6 +202,7 @@ public class Admin {
 		if (Main.customerInfoList.isEmpty()) {
 			System.out.println("삭제할 회원정보가 없습니다.");
 		} else {
+			System.out.println(Main.customerInfoList.size());
 			System.out.println("----------------------------------------------------------------");
 			System.out.println(" 등급 | 아이디 | 이름 | 나이 | 누적결제금액 | 마일리지 ");
 			System.out.println("----------------------------------------------------------------");
@@ -217,6 +220,7 @@ public class Admin {
 						str = sc.nextLine();
 						if (str.equalsIgnoreCase("Y")) {
 							int cusId = i;
+							System.out.println(cusId);
 							// 삭제 회원 장바구니 좌석지정 취소하기
 							System.out.println(Main.customerInfoList.get(cusId).getId() + " 회원 정보가 삭제되었습니다.");
 							customerCartDelete(cusId);
@@ -251,12 +255,14 @@ public class Admin {
 						break;
 					}
 				}
+				// 좌석지정 취소
 				Main.customerInfoList.get(cusId).getCart().cancelSeats(pnumId, numId);
-				Main.customerInfoList.get(cusId).getCart().removeCartPerformance(pnumId, numId);
-				// 공연 정보 저장, 로딩
-				Admin.savePerformanceList();
-				Admin.lodePerformanceList();
 			}
+			// 장바구니 비우기
+			Main.customerInfoList.get(cusId).getCart().removeAllCart();
+			// 공연 정보 저장, 로딩
+			Admin.savePerformanceList();
+			Admin.lodePerformanceList();
 		}
 	}
 
