@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-
 //프로젝트명 : Ticket World
 //클레스 역할 : 공연별 오픈톡방 서버를 관리하는 클래스
 //제작자 : 안시우, 제작일 : 24년 4월 22일
